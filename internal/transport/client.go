@@ -6,20 +6,21 @@ import (
 	"net"
 	"os"
 
+	"github.com/pawannn/gshell/internal/security"
 	"golang.org/x/term"
 )
 
-func Connect(address string) error {
+func Connect(payload security.SessionPayload) error {
 
+	address := payload.IP + ":" + payload.Port
 	conn, err := net.Dial("tcp", address)
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
 
-	fmt.Println("Connected to", address)
+	fmt.Println("Connected to", payload.Session)
 
-	// enable raw terminal
 	oldState, err := term.MakeRaw(int(os.Stdin.Fd()))
 	if err != nil {
 		return err

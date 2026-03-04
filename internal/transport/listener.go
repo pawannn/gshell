@@ -36,7 +36,10 @@ func StartListener(port string) error {
 	// client → shell
 	go io.Copy(ptmx, conn)
 
-	// shell → client + host terminal
+	// host → shell
+	go io.Copy(ptmx, os.Stdin)
+
+	// shell → client + host
 	io.Copy(io.MultiWriter(conn, os.Stdout), ptmx)
 
 	return nil

@@ -1,9 +1,7 @@
 package cmd
 
 import (
-	"fmt"
-
-	"github.com/pawannn/gshell/internal/transport"
+	"github.com/pawannn/gshell/internal/app"
 	"github.com/spf13/cobra"
 )
 
@@ -12,11 +10,8 @@ var port string
 var shareCmd = &cobra.Command{
 	Use:   "share",
 	Short: "Start gshell in share mode",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Starting gshell in share mode on port", port)
-		if err := transport.StartListener(port); err != nil {
-			fmt.Println("Error:", err)
-		}
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return app.Share(port, "default-session")
 	},
 }
 
