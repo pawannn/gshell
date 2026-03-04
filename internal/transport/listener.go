@@ -5,10 +5,11 @@ import (
 	"io"
 	"net"
 	"os"
-	"time"
 
+	"github.com/pawannn/gshell/internal/auth"
 	"github.com/pawannn/gshell/internal/pty"
 	"github.com/pawannn/gshell/internal/security"
+	"github.com/pawannn/gshell/internal/shutdown"
 )
 
 func StartListener(payload security.SessionPayload) error {
@@ -21,46 +22,44 @@ func StartListener(payload security.SessionPayload) error {
 
 	fmt.Println("Listening on port", payload.Port)
 
-	expiryDuration := time.Until(time.Unix(payload.Expiry, 0))
-
-	if expiryDuration <= 0 {
-		return fmt.Errorf("session already expired")
-	}
-
-	connChan := make(chan net.Conn)
-	errChan := make(chan error)
-
-	go func() {
-		conn, err := ln.Accept()
-		if err != nil {
-			errChan <- err
-			return
-		}
-		connChan <- conn
-	}()
-
-	select {
-
-	case conn := <-connChan:
-		defer conn.Close()
-		fmt.Println("Client connected from:", conn.RemoteAddr())
-
-		ptmx, err := pty.StartShell()
-		if err != nil {
-			return err
-		}
-		defer ptmx.Close()
-		go io.Copy(ptmx, conn)
-		go io.Copy(ptmx, os.Stdin)
-		io.Copy(io.MultiWriter(conn, os.Stdout), ptmx)
-
-	case err := <-errChan:
+	conn, err := ln.Accept()
+	if err != nil {
 		return err
-
-	case <-time.After(expiryDuration):
-		fmt.Println("Session expired. No clients joined.")
-		return nil
 	}
+	defer conn.Close()
+
+	fmt.Println("Client connected from:", conn.RemoteAddr())
+
+	// 🔐 authenticate client
+	err = auth.ServerHandshake(conn, payload.Pwd)
+	if err != nil {
+		fmt.Println("Authentication failed")
+		return err
+	}
+
+	fmt.Println("Client authenticated")
+
+	ptmx, err := pty.StartShell()
+	if err != nil {
+		return err
+	}
+	defer ptmx.Close()
+
+	go shutdown.Wait(func() {
+		fmt.Println("\nShutting down session...")
+		conn.Close()
+		ptmx.Close()
+		ln.Close()
+	})
+
+	// client → shell
+	go io.Copy(ptmx, conn)
+
+	// host → shell
+	go io.Copy(ptmx, os.Stdin)
+
+	// shell → client + host
+	io.Copy(io.MultiWriter(conn, os.Stdout), ptmx)
 
 	return nil
 }
