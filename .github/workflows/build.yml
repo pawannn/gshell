@@ -3,11 +3,30 @@ name: Build gshell
 on:
   push:
     branches:
-      - "**"
+      - "main"
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        include:
+          - os: linux
+            arch: amd64
+            output: gshell-linux-amd64
+          - os: linux
+            arch: arm64
+            output: gshell-linux-arm64
+          - os: darwin
+            arch: amd64
+            output: gshell-darwin-amd64
+          - os: darwin
+            arch: arm64
+            output: gshell-darwin-arm64
+          - os: windows
+            arch: amd64
+            output: gshell-windows-amd64.exe
 
     steps:
       - name: Checkout repository
@@ -16,7 +35,8 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.22"
+          go-version: "1.26.0"
+          cache: true
 
       - name: Install dependencies
         run: |
@@ -28,14 +48,15 @@ jobs:
           SECRET_KEY=$(openssl rand -hex 32)
           echo "SECRET_KEY=$SECRET_KEY" >> $GITHUB_ENV
 
-      - name: Build gshell
+      - name: Build binary
         run: |
+          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} \
           go build \
           -ldflags "-X github.com/pawannn/gshell/internal/security.SecretKey=${{ env.SECRET_KEY }}" \
-          -o gshell
+          -o ${{ matrix.output }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: gshell
-          path: gshell
+          name: ${{ matrix.output }}
+          path: ${{ matrix.output }}
