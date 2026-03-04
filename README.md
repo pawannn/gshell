@@ -1,8 +1,8 @@
 # gshell
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-
 **gshell — Secure peer-to-peer terminal sharing.**
+
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
 `gshell` lets you share a live terminal session with someone using a single command.
 No servers, no accounts, no infrastructure.
