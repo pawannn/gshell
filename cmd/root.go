@@ -6,6 +6,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var password string
+
 var rootCmd = &cobra.Command{
 	Use:   "gshell",
 	Short: "gshell — Peer-to-Peer Terminal Sharing in Go",

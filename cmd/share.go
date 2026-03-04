@@ -11,11 +11,13 @@ var shareCmd = &cobra.Command{
 	Use:   "share",
 	Short: "Start gshell in share mode",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return app.Share(port, "default-session")
+
+		return app.Share(port, "default-session", password)
 	},
 }
 
 func init() {
-	shareCmd.Flags().StringVarP(&port, "port", "p", "9000", "Port to listen on")
+	shareCmd.Flags().StringVarP(&port, "port", "p", "1337", "Port to listen on")
+	shareCmd.Flags().StringVarP(&password, "password", "s", "", "Session password")
 	rootCmd.AddCommand(shareCmd)
 }

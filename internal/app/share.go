@@ -2,13 +2,14 @@ package app
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/pawannn/gshell/internal/security"
 	"github.com/pawannn/gshell/internal/transport"
 	"github.com/pawannn/gshell/pkg"
 )
 
-func Share(port string, sessionName string) error {
+func Share(port string, sessionName string, password string) error {
 
 	ip, err := pkg.GetLocalIP()
 	if err != nil {
@@ -19,6 +20,8 @@ func Share(port string, sessionName string) error {
 		IP:      ip,
 		Port:    port,
 		Session: sessionName,
+		Pwd:     password,
+		Expiry:  time.Now().Add(30 * time.Second).Unix(),
 	}
 
 	token, err := security.Encrypt(payload)
@@ -27,10 +30,11 @@ func Share(port string, sessionName string) error {
 	}
 
 	fmt.Println()
-	fmt.Println("Session started:", sessionName)
-	fmt.Println("Invite command:")
+	fmt.Println("Session:", sessionName)
+	fmt.Println("Token Expires in : 30 seconds")
+	fmt.Println("Join using:")
 	fmt.Println("gshell join", token)
 	fmt.Println()
 
-	return transport.StartListener(port)
+	return transport.StartListener(payload)
 }
