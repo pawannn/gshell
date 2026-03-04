@@ -3,7 +3,7 @@ name: Build gshell
 on:
   push:
     branches:
-      - "ci-tes"
+      - "ci-test"
 
 jobs:
   build:
