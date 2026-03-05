@@ -6,7 +6,7 @@ import (
 )
 
 var joinCmd = &cobra.Command{
-	Use:   "join [address:port]",
+	Use:   "join [token]",
 	Short: "Join a gshell session",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {

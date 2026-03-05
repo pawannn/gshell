@@ -27,9 +27,6 @@ jobs:
           - os: darwin
             arch: arm64
             name: gshell-darwin-arm64
-          - os: windows
-            arch: amd64
-            name: gshell-windows-amd64.exe
 
     steps:
       - name: Checkout

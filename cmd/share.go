@@ -1,6 +1,9 @@
 package cmd
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/pawannn/gshell/internal/app"
 	"github.com/spf13/cobra"
 )
@@ -11,8 +14,11 @@ var shareCmd = &cobra.Command{
 	Use:   "share",
 	Short: "Start gshell in share mode",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		user := os.Getenv("USER")
+		host, _ := os.Hostname()
 
-		return app.Share(port, "default-session", password)
+		session := fmt.Sprintf("%s-%s", user, host)
+		return app.Share(port, session, password)
 	},
 }
 
