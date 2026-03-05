@@ -39,7 +39,7 @@ jobs:
 
       - name: Build
         run: |
-          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} \
+          CGO_ENABLED=0  GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} \
           go build \
           -ldflags "-X github.com/pawannn/gshell/internal/security.SecretKey=${{ secrets.GSHELL_SECRET_KEY }} -X github.com/pawannn/gshell/cmd.Version=${{ github.ref_name }}" \
           -o ${{ matrix.name }}
