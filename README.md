@@ -220,6 +220,11 @@ Both terminals now control the same shell.
 
 ---
 
+# Demo
+![Demo](./resources/demo.gif)
+
+---
+
 # Limitations
 
 * If two users type simultaneously, characters may overlap (same as shared tmux sessions).
