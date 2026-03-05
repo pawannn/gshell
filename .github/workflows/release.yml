@@ -32,22 +32,19 @@ jobs:
             name: gshell-windows-amd64.exe
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-go@v5
+      - name: Setup Go
+        uses: actions/setup-go@v5
         with:
           go-version: "1.26.0"
-
-      - name: Generate secret
-        run: |
-          SECRET_KEY=$(openssl rand -hex 32)
-          echo "SECRET_KEY=$SECRET_KEY" >> $GITHUB_ENV
 
       - name: Build
         run: |
           GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} \
           go build \
-          -ldflags "-X github.com/pawannn/gshell/internal/security.SecretKey=${{ env.SECRET_KEY }}" \
+          -ldflags "-X github.com/pawannn/gshell/internal/security.SecretKey=${{ secrets.GSHELL_SECRET_KEY }}" \
           -o ${{ matrix.name }}
 
       - name: Upload Release Asset
