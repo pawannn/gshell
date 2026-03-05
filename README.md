@@ -221,7 +221,7 @@ Both terminals now control the same shell.
 ---
 
 # Demo
-![Demo](./resources/demo.gif)
+![Demo](./resources/demo_LiNlT4AR.gif)
 
 ---
 
